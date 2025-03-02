@@ -34,9 +34,10 @@ def client(db):
 
 def test_upload_model(client):
     response = client.post("/app/models", 
-                           json={"model_name": "Test Model", 
-                                 "model_version": "v1", 
-                                 "model_accuracy": 0.95
+                           params={
+                               "model_name": "Test Model", 
+                               "model_version": "v1", 
+                               "model_accuracy": 0.95
                             },
                             files={"model_file": ("test_model.pkl", b"testing model content", "application/octet-stream")}
                         )
@@ -50,6 +51,15 @@ def test_get_models(client, db):
     assert "models list" in response.json()
 
 def test_get_model_by_name(client, db):
+    from app.models import Model  # Import model within the test function
+    test_model = Model(
+        name="test_model",
+        version="v1",
+        accuracy=0.95,
+        file_path="test_model.pkl"
+    )
+    db.add(test_model)
+    db.commit()
     response = client.get("/app/models/test_model")
     assert response.status_code == 200
     assert response.json()["name"] == "test_model"
@@ -57,4 +67,4 @@ def test_get_model_by_name(client, db):
 def test_get_unexisting_model(client):
     response = client.get("/app/models/non_existent_model")
     assert response.status_code == 404
-    assert response.json() == {"message": "Requested model not found"}
+    assert response.json() == {"detail": "Requested model not found"}
