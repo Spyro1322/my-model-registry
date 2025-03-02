@@ -43,8 +43,7 @@ def test_upload_model(client):
                         )
     print(response.json())  # Debugging output
     assert response.status_code == 201
-    assert response.json() == {"message": "Model was uploaded successfully"}
-    assert "model_id" in response.json()
+    assert response.json() == {"message": "Model was uploaded successfully", "model_id": "test_id"}
 
 def test_get_models(client, db):
     response = client.get("/app/models")
