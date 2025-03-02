@@ -55,6 +55,6 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
-        docker build -t my-app/spiros-model-registry:latest .
+        docker build -t $DOCKER_USERNAME/spiros-model-registry:latest .
         echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-        docker push my-app/spiros-model-registry:latest
+        docker push $DOCKER_USERNAME/spiros-model-registry:latest
