@@ -1,7 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from . import models, database
+from app import models, database
 import uuid
 
 app = FastAPI()
@@ -34,7 +34,7 @@ async def get_models():
     db = database.SessionLocal()
     try:
         models_catalog = db.query(models.Model).all()
-        return JSONResponse(status_code=200, content={"models list": [model.__dict__() for model in models_catalog]})
+        return JSONResponse(status_code=200, content={"models list": [model.__dict__ for model in models_catalog]})
     finally:
         db.close()
 
@@ -45,7 +45,7 @@ async def get_model_by_name(model_name: str):
         model = db.query(models.Model).filter(models.Model.name == model_name).first()
         if model is None:
             raise HTTPException(status_code=404, detail="Requested model not found")
-        return JSONResponse(status_code=200, content=model.__dict__())
+        return JSONResponse(status_code=200, content=model.__dict__)
     finally:
         db.close()
 
