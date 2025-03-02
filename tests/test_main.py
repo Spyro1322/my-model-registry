@@ -30,7 +30,7 @@ def client(db):
     return TestClient(app)
 
 # Test cases for uploading a model and retrieving models by name
-client = TestClient(app)
+# client = TestClient(app)
 
 def test_upload_model(client):
     response = client.post("/app/models", 
