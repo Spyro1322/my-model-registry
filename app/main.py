@@ -6,7 +6,7 @@ import uuid
 
 app = FastAPI()
 
-@app.post("/models")
+@app.post("/app/models")
 async def upload_model(model_name: str, model_version:str, model_accuracy: float, model_file: UploadFile = File(...)):
     db = database.SessionLocal()
     try:
@@ -14,7 +14,7 @@ async def upload_model(model_name: str, model_version:str, model_accuracy: float
             raise HTTPException(status_code=409, detail="Model already exists")
 
         model_id = str(uuid.uuid4())
-        file_location = f"models/{model_id}_{model_file.filename}"
+        file_location = f"/app/models/{model_id}_{model_file.filename}"
         with open(file_location, "wb+") as file_object:
             await file_object.write(model_file.file.read())
 
@@ -29,7 +29,7 @@ async def upload_model(model_name: str, model_version:str, model_accuracy: float
     finally:
         db.close()
 
-@app.get("/models")
+@app.get("/app/models")
 async def get_models():
     db = database.SessionLocal()
     try:
@@ -38,7 +38,7 @@ async def get_models():
     finally:
         db.close()
 
-@app.get("/models/{model_name}")
+@app.get("/app/models/{model_name}")
 async def get_model_by_name(model_name: str):
     db = database.SessionLocal()
     try:
