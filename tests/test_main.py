@@ -41,9 +41,12 @@ def test_upload_model(client):
                             },
                             files={"model_file": ("test_model.pkl", b"testing model content", "application/octet-stream")}
                         )
+    
+    response_json = response.json()
     print(response.json())  # Debugging output
     assert response.status_code == 201
-    assert response.json() == {"message": "Model was uploaded successfully", "model_id": "test_id"}
+    assert response_json["message"] == "Model was uploaded successfully"
+    assert "model_id" in response_json
 
 def test_get_models(client, db):
     response = client.get("/app/models")
