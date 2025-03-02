@@ -1,7 +1,9 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app import models, database
+from app.database import get_db
+from app.models import Model
 import uuid, os, sys
 
 app = FastAPI()
@@ -36,21 +38,37 @@ async def upload_model(model_name: str, model_version:str, model_accuracy: float
 
 @app.get("/app/models")
 async def get_models():
-    db = database.SessionLocal()
+    db: Session = database.SessionLocal()
     try:
         models_catalog = db.query(models.Model).all()
-        return JSONResponse(status_code=200, content={"models list": [model.__dict__ for model in models_catalog]})
+        return JSONResponse(status_code=200, content={"models list": [
+            {
+                "model_id": model.id,
+                "model_name": model.name,
+                "model_version": model.version,
+                "model_accuracy": model.accuracy,
+                "model_file_path": model.file_path
+            } 
+            for model in models_catalog
+            ]}
+        )
     finally:
         db.close()
 
 @app.get("/app/models/{model_name}")
-async def get_model_by_name(model_name: str):
+async def get_model_by_name(model_name: str, db: Session = Depends(get_db)):  # Using dependency injection for database session):
     db = database.SessionLocal()
     try:
         model = db.query(models.Model).filter(models.Model.name == model_name).first()
         if model is None:
             raise HTTPException(status_code=404, detail="Requested model not found")
-        return JSONResponse(status_code=200, content=model.__dict__)
+        return JSONResponse(status_code=200, content={
+            "model_id": model.id,
+            "model_name": model.name,
+            "model_version": model.version,
+            "model_accuracy": model.accuracy,
+            "model_file_path": model.file_path
+        })
     finally:
         db.close()
 
