@@ -50,7 +50,7 @@ async def get_models():
                 "name": model.name,
                 "version": model.version,
                 "accuracy": model.saccuracy,
-                "file_path": model.file
+                "file_path": model.file_path
             } 
             for model in models_catalog
             ]}
@@ -70,7 +70,7 @@ async def get_model_by_name(model_name: str, db: Session = Depends(get_db)):  # 
             "name": model.name,
             "version": model.version,
             "accuracy": model.accuracy,
-            "file_path": model.file
+            "file_path": model.file_path
         })
     finally:
         db.close()
