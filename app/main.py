@@ -8,8 +8,11 @@ import uuid, os, sys
 
 app = FastAPI()
 
+UPLOAD_DIR = "./models"
 @app.post("/app/models")
 async def upload_model(model_name: str, model_version:str, model_accuracy: float, model_file: UploadFile = File(...)):
+    os.makedirs(UPLOAD_DIR, exist_ok=True)  # Create the models directory if it doesn't exist
+    
     db = database.SessionLocal()
     try:
         if db.query(models.Model).filter(models.Model.name == model_name, models.Model.version == model_version).first():
@@ -43,11 +46,11 @@ async def get_models():
         models_catalog = db.query(models.Model).all()
         return JSONResponse(status_code=200, content={"models list": [
             {
-                "model_id": model.id,
-                "model_name": model.name,
-                "model_version": model.version,
-                "model_accuracy": model.accuracy,
-                "model_file_path": model.file_path
+                "id": model.id,
+                "name": model.name,
+                "version": model.version,
+                "accuracy": model.saccuracy,
+                "file_path": model.file
             } 
             for model in models_catalog
             ]}
@@ -63,11 +66,11 @@ async def get_model_by_name(model_name: str, db: Session = Depends(get_db)):  # 
         if model is None:
             raise HTTPException(status_code=404, detail="Requested model not found")
         return JSONResponse(status_code=200, content={
-            "model_id": model.id,
-            "model_name": model.name,
-            "model_version": model.version,
-            "model_accuracy": model.accuracy,
-            "model_file_path": model.file_path
+            "id": model.id,
+            "name": model.name,
+            "version": model.version,
+            "accuracy": model.accuracy,
+            "file_path": model.file
         })
     finally:
         db.close()
