@@ -23,7 +23,7 @@ Simple Model Registry is a FastAPI-based application for managing and storing ma
 
 1.  Clone the repository:
 ```bash
-git clone https://github.com/yourusername/my-model-registry.git
+git clone https://github.com/Spyro1322/my-model-registry.git
 cd my-model-registry
 ```
 
