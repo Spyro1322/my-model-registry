@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
     - name: Install dependencies
@@ -25,7 +25,7 @@ jobs:
         pip install pytest pytest-html
         pytest tests/ --html=test-results/report.html --self-contained-html
     - name: Archive tests results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: test-results
         path: test-results/
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Build and Push Docker image
       env:
         DOCKER_USERNAME: ${secrets.DOCKER_USERNAME}
