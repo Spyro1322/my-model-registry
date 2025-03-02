@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app import models, database
-import uuid
+import uuid, os, sys
 
 app = FastAPI()
 
@@ -14,9 +14,12 @@ async def upload_model(model_name: str, model_version:str, model_accuracy: float
             raise HTTPException(status_code=409, detail="Model already exists")
 
         model_id = str(uuid.uuid4())
-        file_location = f"/app/models/{model_id}_{model_file.filename}"
+        directory = "/app/models"
+        os.makedirs(directory, exist_ok=True)  # Create the models directory if it doesn't exist
+        file_location = f"{directory}/{model_id}_{model_file.filename}"
+
         with open(file_location, "wb+") as file_object:
-            await file_object.write(model_file.file.read())
+            file_object.write(await model_file.read())
 
         new_model = models.Model(id=model_id, name=model_name, version=model_version, accuracy=model_accuracy, file_path=file_location)
 
@@ -24,8 +27,10 @@ async def upload_model(model_name: str, model_version:str, model_accuracy: float
         db.commit()
         db.refresh(new_model)
 
-        return JSONResponse(status_code=201, content={"message": "Model was uploaded successfully", "id": new_model.id})
-    
+        return JSONResponse(status_code=201, content={"message": "Model was uploaded successfully", "model_id": new_model.id})
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
         db.close()
 
