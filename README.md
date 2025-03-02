@@ -69,7 +69,11 @@ The application will be avaialble at `http://localhost:8000`.
         └── __init__.py
         └── database.py
         └── main.py
+        └── 📁models
         └── models.py
+    └── 📁tests
+        └── __init__.py
+        └── test_main.py
     └── docker-compose.yml
     └── Dockerfile
     └── README.md
@@ -80,7 +84,7 @@ The application will be avaialble at `http://localhost:8000`.
 
 You can run the test using pytest:
 ```bash
-pytest
+pytest tests/
 ```
 
 ##  CI/CD Pipeline
